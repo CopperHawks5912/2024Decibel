@@ -68,13 +68,10 @@ public class RobotContainer
   private final ShooterSubsystem m_shooterSubsystem = new ShooterSubsystem();
   private final IntakeArmSubsystem m_IntakeArmSubsystem = new IntakeArmSubsystem( );
   private final IntakeGrabberSubsystem m_IntakeGrabberSubsystem = new IntakeGrabberSubsystem( m_intakeNoteBeamBreakSensor );
-  private final ClimberSubsystem m_ClimberSubsystem = new ClimberSubsystem();
   private final AddressableLEDSubsystem m_addressableLEDSubsystem = new AddressableLEDSubsystem();
   Trigger intakeTrigger = new Trigger(m_intakeNoteBeamBreakSensor::get );
     
   XboxController m_driverXboxController = new XboxController(0);
-  CommandGenericHID m_operatorController = new CommandGenericHID(1);
-  
 
   private final SendableChooser<String> m_autoDelayChooser = new SendableChooser<>();
   private final SendableChooser<String> m_autoPathChooser = new SendableChooser<>();
@@ -135,33 +132,19 @@ public class RobotContainer
   {
     //climbCommand current uses ButtonRedUpper1, ButtonRedLower1, ButtonRedUpper2, ButtonRedLower2;
     //we're passing in the driver controller so we could potentially make it rumble.
-    m_ClimberSubsystem.setDefaultCommand(new ClimbCommand(m_ClimberSubsystem, m_operatorController));
 
     new JoystickButton(m_driverXboxController, 8).onTrue((new InstantCommand(drivebase::zeroGyro)));
     new JoystickButton(m_driverXboxController, 7).onTrue((new InstantCommand(this::invertDriveMode)));
     
-    m_operatorController.button(ControllerConstants.ButtonBlueUpper)
-        .onTrue(new ExtendArmCommand(m_IntakeArmSubsystem));
-    m_operatorController.button(ControllerConstants.ButtonBlueLower)
-        .onTrue( new RetractArmCommand(m_IntakeArmSubsystem) );
-    
-    m_operatorController.button(ControllerConstants.ButtonRedUpper3)
-        .whileTrue(new EatNoteCommand(m_IntakeGrabberSubsystem) );
-    m_operatorController.button(ControllerConstants.ButtonRedLower3)
-        .whileTrue(new SpitNoteCommand(m_IntakeGrabberSubsystem));
-    
-    m_operatorController.button(ControllerConstants.ButtonBlack1)
-        .whileTrue(new ShootToAmpCommand(m_shooterSubsystem, m_IntakeGrabberSubsystem ));
-    
     //Uncomment this if you want the Black 2 button to be the speaker shooter. THen comment out the 3 lines below
-     m_operatorController.button(ControllerConstants.ButtonBlack2)
-         .whileTrue(new ShootingLEDCommand(m_addressableLEDSubsystem)
-             .andThen(new ShootToSpeakerCommand(m_shooterSubsystem, m_IntakeGrabberSubsystem, false )));
+//     m_operatorController.button(ControllerConstants.ButtonBlack2)
+//         .whileTrue(new ShootingLEDCommand(m_addressableLEDSubsystem)
+//             .andThen(new ShootToSpeakerCommand(m_shooterSubsystem, m_IntakeGrabberSubsystem, false )));
     
     //Comment this out if you want to disable the Driver right trigger as the speaker shooter.
-    // new JoystickButton(m_driverXboxController, 6)
-    //     .whileTrue(new ShootingLEDCommand(m_addressableLEDSubsystem)
-    //         .andThen(new ShootToSpeakerCommand(m_shooterSubsystem, m_IntakeGrabberSubsystem, false )));
+     new JoystickButton(m_driverXboxController, 6)
+         .whileTrue(new ShootingLEDCommand(m_addressableLEDSubsystem)
+             .andThen(new ShootToSpeakerCommand(m_shooterSubsystem, m_IntakeGrabberSubsystem, false )));
        
     // m_operatorController.axisGreaterThan(1, 0.99)
     //     .whileTrue( new ShootingLEDCommand(m_addressableLEDSubsystem)
